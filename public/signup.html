@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signup</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    .nav-buttons {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .nav-buttons a {
+      margin: 0 10px;
+      padding: 8px 15px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .nav-buttons a:hover {
+      background-color: #0056b3;
+    }
+    form {
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 4px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #message {
+      margin-top: 10px;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-buttons">
+    <a href="/login.html">Login</a>
+  </div>
+
+  <h2>Signup</h2>
+
+  <form id="signupForm">
+    <input type="text" placeholder="Name" id="name" required /><br><br>
+    <input type="email" placeholder="Email" id="email" required /><br><br>
+    <input type="text" placeholder="Phone Number" id="phone" required /><br><br>
+    <input type="password" placeholder="Password" id="password" required /><br><br>
+
+    <label>
+      <input type="checkbox" id="privacy" required />
+      I accept Privacy Policy
+    </label><br><br>
+
+    <button type="submit">Sign Up</button>
+  </form>
+
+  <p id="message"></p>
+
+  <script>
+    const form = document.getElementById("signupForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$/;
+      const password = document.getElementById("password").value;
+
+      if (!passwordRegex.test(password)) {
+        document.getElementById("message").innerText =
+          "Password must contain letter, number & special character";
+        return;
+      }
+
+      const data = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        password: password
+      };
+
+      try {
+        const res = await fetch("/api/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+        document.getElementById("message").innerText = result.message;
+      } catch (error) {
+        document.getElementById("message").innerText = "Unable to signup right now";
+      }
+    });
+  </script>
+</body>
+</html>

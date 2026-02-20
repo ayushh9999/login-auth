@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    .nav-buttons {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .nav-buttons button {
+      margin: 0 10px;
+      padding: 8px 15px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .nav-buttons button:hover {
+      background-color: #c82333;
+    }
+    .welcome-box {
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h2>Dashboard</h2>
+
+  <div class="welcome-box">
+    <p id="status">Checking session...</p>
+  </div>
+
+  <div class="nav-buttons">
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      window.location.href = "login.html";
+    }
+
+    // Verify token is valid
+    async function validateSession() {
+      try {
+        const res = await fetch("/api/me", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          localStorage.removeItem("token");
+          window.location.href = "login.html";
+          return;
+        }
+
+        const result = await res.json();
+        document.getElementById("status").innerText = `Welcome, ${result.user.name}`;
+      } catch (error) {
+        localStorage.removeItem("token");
+        window.location.href = "login.html";
+      }
+    }
+
+    validateSession();
+
+    // Clear token and logout
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
